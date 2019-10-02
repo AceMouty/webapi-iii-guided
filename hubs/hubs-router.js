@@ -1,12 +1,15 @@
 const express = require('express');
-
 const Hubs = require('./hubs-model.js');
 const Messages = require('../messages/messages-model.js');
-
+// middleware
+const gate  = require('../auth/gate-middleware');
 const router = express.Router();
 
+// Applies middleware to the entire route
+router.use(gate)
+
 // this only runs if the url has /api/hubs in it
-router.get('/', (req, res) => {
+router.get('/', gate, (req, res) => {
   Hubs.find(req.query)
   .then(hubs => {
     res.status(200).json(hubs);
@@ -21,7 +24,6 @@ router.get('/', (req, res) => {
 });
 
 // /api/hubs/:id
-
 router.get('/:id', (req, res) => {
   Hubs.findById(req.params.id)
   .then(hub => {
